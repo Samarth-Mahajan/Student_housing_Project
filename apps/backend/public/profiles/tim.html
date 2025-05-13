@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tim's page</title>
+    <style>
+        html {
+            font-family: sans-serif;
+        }
+
+        h1 {
+            margin: unset;
+        }
+
+        img {
+            object-fit: cover;
+        }
+
+        body {
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(164deg, rgba(115,107,246,1) 0%, rgba(57,184,79,1) 45%, rgba(0,212,255,1) 100%);
+
+            header {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                margin: 20px 40px;
+
+                .actions {
+                    margin-left: auto;
+                }
+            }
+
+            main {
+                flex-grow: 1;
+            }
+        }
+
+        .normal {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px 40px;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 10px;
+
+            .text {
+                color: #e8e8e8;
+                font-style: italic;
+            }
+
+            img {
+                padding: 10px;
+                max-width: 100%;
+            }
+        }
+
+        .joke {
+            display: none;
+
+            .text {
+                font-family: "Comic Sans MS", "Comic Sans", cursive;
+                font-size: 40pt;
+                font-style: italic;
+                font-weight: bold;
+                white-space: break-spaces;
+            }
+
+            img {
+                height: 250px;
+                width: auto;
+                vertical-align: top;
+                padding-top: 20px;
+            }
+        }
+
+        header:has(.toggle:checked) ~ main {
+            background: linear-gradient(
+                130deg,
+                rgb(238, 27, 27) 0%,
+                rgb(184, 57, 157) 15%,
+                rgb(52, 15, 216) 30%,
+                rgb(6, 205, 255) 45%,
+                rgb(0, 255, 0) 60%,
+                rgb(228, 243, 17) 80%,
+                rgb(243, 145, 17) 100%);
+
+            .normal {
+                display: none;
+            }
+
+            .joke {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Tim's page</h1>
+        <div class="actions">
+            Toggle joke
+            <input type="checkbox" class="toggle">
+        </div>
+    </header>
+    <main>
+        <section class="normal">
+            <img src="images/cat.jpg">
+            <div class="text">
+                My favorite cat
+            </div>
+        </section>
+        <section class="joke">
+            <span class="text">
+                graphic design is
+                my passion. <img src="images/graphic-design-cat.jpg">
+            </span>
+        </section>
+    </main>
+
+    <footer>
+        <style>
+            footer {
+                position: fixed;
+                bottom: 5px;
+                left: 5px;
+
+                .text {
+                    font-family: sans-serif;
+                }
+            }
+        </style>
+        <div class="text">
+            Fulda University of Applied Sciences Software Engineering Project, Fall 2024. For Demonstration Only
+        </div>
+    </footer>
+</body>
+</html>

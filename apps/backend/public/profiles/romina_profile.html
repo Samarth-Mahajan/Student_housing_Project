@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me - Romina Nikasa</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            padding: 30px;
+            background-color: #ffffff;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        img {
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border: 4px solid #009688;
+        }
+
+        h1 {
+            font-size: 2.8em;
+            margin: 0.5em 0;
+            color: #00796b;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        h2 {
+            font-size: 2.2em;
+            margin: 1.5em 0 0.5em;
+            color: #009688;
+            border-bottom: 2px solid #00796b;
+            padding-bottom: 5px;
+        }
+
+        p {
+            line-height: 1.6;
+            margin: 0.5em 0;
+            font-size: 1.1em;
+        }
+
+        a {
+            color: #00796b;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            color: #004d40;
+        }
+
+        .skills {
+            background-color: #e0f7fa;
+            padding: 15px;
+            border-left: 4px solid #009688;
+            border-radius: 5px;
+            margin-top: 1.5em;
+            text-align: left;
+            font-size: 1.1em;
+        }
+
+        .skills h3 {
+            margin: 0 0 10px;
+            font-size: 1.6em;
+            color: #00796b;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul li {
+            margin: 0.5em 0;
+            line-height: 1.6;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        ul li::before {
+            content: "✓"; /* Adding checkmark for each skill */
+            color: #00796b;
+            position: absolute;
+            left: 0;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2.2em;
+            }
+
+            h2 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <img src="images/romina_profile_pic.jpg" alt="Profile Photo">
+        <h1>Romina Nikasa</h1>
+        <p>Welcome to my vibrant world!</p>
+        <p>I’m a master’s student in Global Software Development at Hochschule Fulda, with a passion for coding and nearly two years of experience as a Java developer.</p>
+        <p>Currently, I'm diving into the exciting realm of Data Management as a Working Student, where I get to play with Big Data technologies like Apache Airflow and Snowflake.</p>
+
+        <div class="skills">
+            <h3>Skills</h3>
+            <p>Here are some of the technologies and tools I work with:</p>
+            <ul>
+                <li>Java Development (Spring Framework)</li>
+                <li>Oracle APEX Development</li>
+                <li>Apache Airflow</li>
+                <li>Snowflake Data Warehousing</li>
+                <li>Python Scripting</li>
+                <li>Unit Testing (JUnit)</li>
+                <li>Agile Methodologies</li>
+            </ul>
+        </div>
+
+        <p>Feel free to connect with me via email: <a href="mailto:romina.nikasa@gmail.com">romina.nikasa@gmail.com</a></p>
+    </div>
+
+    <footer>
+        <style>
+            footer {
+                position: fixed;
+                bottom: 5px;
+                left: 5px;
+
+                .text {
+                    font-family: sans-serif;
+                }
+            }
+        </style>
+        <div class="text">
+            Fulda University of Applied Sciences Software Engineering Project, Fall 2024. For Demonstration Only
+        </div>
+    </footer>
+</body>
+
+</html>
