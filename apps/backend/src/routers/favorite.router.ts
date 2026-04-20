@@ -1,11 +1,11 @@
 import express from "express"
 import type { Request, Response } from "express"
 import { validationResult } from "express-validator"
-import { DB } from "@/db"
+import { DB } from "../db"
 import { FavoriteProperty } from "../entities/FavoriteProperty"
 import { User } from "../entities/User"
 import { Property } from "../entities/Property"
-import { authenticateToken } from "@/middlewares/auth.middleware"
+import { authenticateToken } from "../middlewares/auth.middleware"
 
 const router = express.Router()
 

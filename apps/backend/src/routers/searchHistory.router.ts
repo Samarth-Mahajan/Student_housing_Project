@@ -1,10 +1,10 @@
 import express from "express"
 import type { Request, Response } from "express"
 import { validationResult } from "express-validator"
-import { DB } from "@/db"
+import { DB } from "../db"
 import { SearchHistoryV2 } from "../entities/SearchHistory"
 import { User } from "../entities/User"
-import { authenticateToken } from "@/middlewares/auth.middleware"
+import { authenticateToken } from "../middlewares/auth.middleware"
 import { PropertyStatus } from "@gdsd/common/models"
 
 const router = express.Router()

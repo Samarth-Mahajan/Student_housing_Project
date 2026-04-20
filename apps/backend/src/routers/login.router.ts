@@ -3,9 +3,9 @@ import type { Request, Response } from "express"
 import { validationResult } from "express-validator"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
-import { DB } from "@/db"
+import { DB } from "../db"
 import { User } from "../entities/User"
-import { loginValidation, signupValidation } from "@/validators/auth.validator"
+import { loginValidation, signupValidation } from "../validators/auth.validator"
 import { tryParseEnv } from "@gdsd/common/util"
 
 const router = express.Router()

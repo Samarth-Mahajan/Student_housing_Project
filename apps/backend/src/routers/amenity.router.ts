@@ -1,7 +1,7 @@
 import express from "express";
-import { DB } from "@/db";
+import { DB } from "../db";
 import { Amenity } from '../entities/Amenity';
-import { authenticateToken } from "@/middlewares/auth.middleware"; 
+import { authenticateToken } from "../middlewares/auth.middleware"; 
 
 const router = express.Router();
 

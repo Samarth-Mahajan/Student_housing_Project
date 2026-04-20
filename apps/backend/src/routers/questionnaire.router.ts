@@ -1,13 +1,13 @@
 import express from "express";
 import type { Request, Response } from "express";
-import { DB } from "@/db";
+import { DB } from "../db";
 import {
   LandlordQuestionnaire,
   TenantQuestionnaire,
   Property,
   User,
-} from "@/entities";
-import { authenticateToken } from "@/middlewares/auth.middleware";
+} from "../entities";
+import { authenticateToken } from "../middlewares/auth.middleware";
 
 const router = express.Router();
 

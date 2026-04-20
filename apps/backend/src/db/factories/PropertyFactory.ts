@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker"
 import { Factory } from "@mikro-orm/seeder"
 import { PropertyStatus, PropertyType } from "@gdsd/common/models"
-import { Property } from "@/entities/Property"
+import { Property } from "../../entities/Property"
 
 export class PropertyFactory extends Factory<Property> {
     model = Property

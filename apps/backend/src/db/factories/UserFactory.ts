@@ -1,7 +1,7 @@
 import { faker, type SexType } from "@faker-js/faker"
 import { Factory } from "@mikro-orm/seeder"
 import { Gender, Role } from "@gdsd/common/models"
-import { User } from "@/entities/User"
+import { User } from "../../entities/User"
 
 export class UserFactory extends Factory<User> {
     model = User

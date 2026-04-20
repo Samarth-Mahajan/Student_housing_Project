@@ -1,10 +1,10 @@
 import type { Request, Response } from "express"
 import express from "express"
-import { DB } from "@/db"
+import { DB } from "../db"
 import { param, validationResult } from "express-validator"
 import type { IChat } from "@gdsd/common/models"
-import { getChatId } from "@/chat"
-import { authenticateToken } from "@/middlewares/auth.middleware"
+import { getChatId } from "../chat"
+import { authenticateToken } from "../middlewares/auth.middleware"
 
 
 const router = express.Router()

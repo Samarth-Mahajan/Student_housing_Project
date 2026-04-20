@@ -1,10 +1,10 @@
 import express from "express"
-import { BlobStorage } from "@/blob-storage.js"
+import { BlobStorage } from "../blob-storage"
 import formidable from "formidable"
 import { DB } from "../db"
 import { MediaType } from "@gdsd/common/models"
 import { MediaFile } from "../entities"
-import { authenticateToken } from "@/middlewares/auth.middleware"
+import { authenticateToken } from "../middlewares/auth.middleware"
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024
 const router = express.Router()

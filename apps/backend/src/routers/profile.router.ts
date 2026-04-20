@@ -1,8 +1,8 @@
 import type { Request, Response } from "express"
 import express from "express"
 import { validationResult, param, body } from "express-validator"
-import { DB } from "@/db"
-import { authenticateToken } from "@/middlewares/auth.middleware"
+import { DB } from "../db"
+import { authenticateToken } from "../middlewares/auth.middleware"
 const router = express.Router()
 router.get(
     "/:id",

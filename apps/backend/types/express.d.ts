@@ -1,10 +1,9 @@
-// src/types/express.d.ts
-import { User } from '@/entities'; // Adjust path if necessary
+import { User } from "../src/entities"
 
 declare global {
-  namespace Express {
-    interface Request {
-      user?: User; // Declare the user property on the Request object
+    namespace Express {
+        interface Request {
+            user?: User
+        }
     }
-  }
 }

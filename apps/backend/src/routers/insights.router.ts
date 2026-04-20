@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express"
 import express from "express"
-import { DB } from "@/db"
-import { authenticateToken } from "@/middlewares/auth.middleware"
+import { DB } from "../db"
+import { authenticateToken } from "../middlewares/auth.middleware"
 
 const router = express.Router()
 
