@@ -11,6 +11,7 @@
         "mikro-orm": "cross-env NODE_OPTIONS='--loader=@swc-node/register/esm' mikro-orm"
     },
     "dependencies": {
+        "@gdsd/common": "*",
         "@azure/storage-blob": "^12.25.0",
         "@mikro-orm/mysql": "^6.4.0",
         "@mikro-orm/reflection": "^6.4.0",
@@ -26,7 +27,6 @@
     },
     "devDependencies": {
         "@faker-js/faker": "^9.2.0",
-        "@gdsd/common": "*",
         "@gdsd/eslint-config": "*",
         "@gdsd/typescript-config": "*",
         "@microsoft/api-extractor": "^7.48.0",
