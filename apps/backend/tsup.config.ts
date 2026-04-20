@@ -4,12 +4,13 @@ import { defineConfig } from "tsup"
 export default defineConfig({
     entry: ["src/index.ts"],
     clean: true,
-    format: "iife",
+    format: ["esm"],
     outExtension: () => ({
         js: ".js",
         dts: ".d.ts"
     }),
     bundle: true,
+    splitting: true,
     platform: "node",
     experimentalDts: true,
     esbuildPlugins: [
@@ -35,7 +36,8 @@ export default defineConfig({
             "pg",
             "pg-query-stream",
             "sqlite3",
-            "tedious"
+            "tedious",
+            "cloudinary"
         ]
     }
 })
