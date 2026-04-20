@@ -32,8 +32,13 @@
     },
     "globalEnv": [
         "BACKEND_PORT",
-        "BLOB_STORAGE",
+        "CORS_ORIGIN",
+        "CLOUDINARY_URL",
         "DB_CONNECTION",
-        "NODE_ENV"
+        "NODE_ENV",
+        "PORT"
+    ],
+    "globalPassThroughEnv": [
+        "JWT_SECRET"
     ]
 }

@@ -35,8 +35,7 @@ router.post("/", authenticateToken, async (req, res, next) => {
         await DB.mediaFiles.insert(entity)
         await DB.em.flush()
 
-        const mimeType = file.mimetype ?? "application/octet-stream"
-        await BlobStorage.upload(entity.id, file.filepath, mimeType)
+        await BlobStorage.upload(entity.id, file.filepath)
         res.json(entity)
     })
 })

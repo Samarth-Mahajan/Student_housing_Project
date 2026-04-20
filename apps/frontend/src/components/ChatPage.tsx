@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { IMessage, IProperty, IUser } from "@gdsd/common/models";
 import { fetchChatMessages, fetchChats, readChat } from "../api";
 import { getPlaceholderAvatar } from "../utils";
@@ -30,6 +30,7 @@ const ChatPage: React.FC<Props> = ({ toggleUnreadUpdate }) => {
   const [otherUserId, setOtherUserId] = useState(() => searchParams.get("user"));
   const [propertyId, setPropertyId] = useState(() => searchParams.get("property"));
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const hasInitializedChats = useRef(false)
 
   const [currentUserId] = useState(() => {
     const result = localStorage.getItem("userId");
@@ -38,7 +39,9 @@ const ChatPage: React.FC<Props> = ({ toggleUnreadUpdate }) => {
     return result;
   });
 
-  const isFromCurrentUser = (message: IMessage) => (typeof message.sender === "string" ? message.sender : message.sender.id) === currentUserId
+  const isFromCurrentUser = useCallback((message: IMessage) => {
+    return (typeof message.sender === "string" ? message.sender : message.sender.id) === currentUserId
+  }, [currentUserId])
 
   useEffect(() => {
     const propertyId = searchParams.get("property")
@@ -52,25 +55,32 @@ const ChatPage: React.FC<Props> = ({ toggleUnreadUpdate }) => {
       const chatId = getChatId(otherUserId, propertyId)
       setCurrentChat(chats.get(chatId))
     }
-  }, [searchParams, location])
+  }, [chats, currentChat?.otherUser.id, currentChat?.property.id, location, searchParams])
 
-  const setChat = (chatId: string, data: ChatData) => {
-    const map = new Map(chats)
-    map.set(chatId, data)
-    setChats(map)
-  }
+  const setChat = useCallback((chatId: string, data: ChatData) => {
+    setChats(prevChats => {
+      const map = new Map(prevChats)
+      map.set(chatId, data)
+      return map
+    })
+  }, [])
 
   // initial chat list setup
   useEffect(() => {
+    if (hasInitializedChats.current)
+      return
+    hasInitializedChats.current = true
+
     const setupChats = async () => {
       const response = await fetchChats();
       let chat: ChatData | undefined = undefined
+      const nextChats = new Map(chats)
 
       for (const apiChat of response) {
         const { otherUser, property, messages, unreadCount } = apiChat
         const chatId = getChatId(otherUser.id, property.id)
 
-        if (chats.has(chatId))
+        if (nextChats.has(chatId))
           continue
 
         chat = {
@@ -81,15 +91,14 @@ const ChatPage: React.FC<Props> = ({ toggleUnreadUpdate }) => {
           hasFetchedAllMessages: true
         }
 
-        chats.set(chatId, chat)
+        nextChats.set(chatId, chat)
       }
-      setChats(chats)
-      // debugger
+      setChats(nextChats)
 
       if (propertyId && otherUserId) {
         const chatId = getChatId(otherUserId, propertyId)
-        chat = chats.get(chatId)
-        if (!chats.has(chatId)) {
+        chat = nextChats.get(chatId)
+        if (!nextChats.has(chatId)) {
           const { messages, otherUser, property, unreadCount } = await fetchChatMessages(otherUserId, propertyId)
 
           chat = {
@@ -99,7 +108,8 @@ const ChatPage: React.FC<Props> = ({ toggleUnreadUpdate }) => {
             unreadCount,
             hasFetchedAllMessages: true
           }
-          setChat(chatId, chat)
+          nextChats.set(chatId, chat)
+          setChats(new Map(nextChats))
         }
       }
 
@@ -108,10 +118,10 @@ const ChatPage: React.FC<Props> = ({ toggleUnreadUpdate }) => {
 
     setupChats()
       .catch(error => console.error("Error fetching messages:", error))
-  }, []);
+  }, [chats, otherUserId, propertyId]);
 
 
-  const setupChat = async (otherUserId: string, propertyId: string) => {
+  const setupChat = useCallback(async (otherUserId: string, propertyId: string) => {
     const { messages, otherUser, property } = await fetchChatMessages(otherUserId, propertyId)
     const chatId = getChatId(otherUserId, propertyId)
 
@@ -131,7 +141,31 @@ const ChatPage: React.FC<Props> = ({ toggleUnreadUpdate }) => {
       setChat(chatId, chat)
     }
     return chat
-  }
+  }, [chats, setChat])
+
+  const scrollToLastMessage = useCallback(() => {
+    // const top = globalThis.scrollY
+    setTimeout(() => {
+      const message = document.querySelector<HTMLElement>(`.chat-messages`)
+      if (!message) return
+      // globalThis.scrollTo({ top, behavior: "smooth" })
+      message.scrollTo({ top: message.scrollHeight - message.offsetHeight, behavior: "smooth" })
+    }, 20)
+  }, [])
+
+  const readAllChatMessages = useCallback((chat: ChatData) => {
+    readChat(chat.otherUser.id, chat.property.id)
+      .then(toggleUnreadUpdate)
+    chat.unreadCount = 0
+    for (const message of chat.messages.filter(isFromCurrentUser)) {
+      message.isReadByReceiver = true
+    }
+    setChats(prevChats => new Map(prevChats))
+  }, [isFromCurrentUser, toggleUnreadUpdate])
+
+  const focusMessageBox = useCallback(() => {
+    document.querySelector<HTMLInputElement>(".msg-box")?.focus()
+  }, [])
 
   // on change chat
   useEffect(() => {
@@ -161,21 +195,7 @@ const ChatPage: React.FC<Props> = ({ toggleUnreadUpdate }) => {
     } catch (e) {
       console.error(e)
     }
-  }, [currentChat])
-
-  function readAllChatMessages(chat: ChatData) {
-    readChat(chat.otherUser.id, chat.property.id)
-      .then(toggleUnreadUpdate)
-    chat.unreadCount = 0
-    for (const message of chat.messages.filter(isFromCurrentUser)) {
-      message.isReadByReceiver = true
-    }
-    setChats(new Map(chats))
-  }
-
-  function focusMessageBox() {
-    document.querySelector<HTMLInputElement>(".msg-box")?.focus()
-  }
+  }, [currentChat, focusMessageBox, readAllChatMessages, scrollToLastMessage, setSearchParams, setupChat])
 
   const handleSendMessage = () => {
     if (newMessageContent.trim() === "") return;
@@ -226,17 +246,7 @@ const ChatPage: React.FC<Props> = ({ toggleUnreadUpdate }) => {
     return () => {
       document.removeEventListener("chat-receive-message", handleMessage);
     };
-  }, []);
-
-  function scrollToLastMessage() {
-    // const top = globalThis.scrollY
-    setTimeout(() => {
-      const message = document.querySelector<HTMLElement>(`.chat-messages`)
-      if (!message) return
-      // globalThis.scrollTo({ top, behavior: "smooth" })
-      message.scrollTo({ top: message.scrollHeight - message.offsetHeight, behavior: "smooth" })
-    }, 20)
-  }
+  }, [chats, readAllChatMessages, scrollToLastMessage, searchParams, setChat, setupChat]);
 
   // mark messages as read when tab is active
   useEffect(() => {
@@ -252,7 +262,7 @@ const ChatPage: React.FC<Props> = ({ toggleUnreadUpdate }) => {
       document.removeEventListener("visibilitychange", handleVisibilityChange)
       window.removeEventListener("focus", handleVisibilityChange)
     }
-  });
+  }, [currentChat, readAllChatMessages]);
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">

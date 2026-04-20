@@ -152,7 +152,7 @@ const AuthPage: React.FC = () => {
     </button>
 
     <div className="mt-7"> 
-      <img src="/Logo.png" style={{ height: "45px", width: "90px" }} className="mx-auto"/>
+      <img src="/Logo.png" alt="GDSD logo" style={{ height: "45px", width: "90px" }} className="mx-auto"/>
     </div>
   </div>
 

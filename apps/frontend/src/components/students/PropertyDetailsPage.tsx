@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ImageCarousel from "../imageCarousel";
-import { fetchListingById, fetchMediaFile, checkQuestionnaireStatus, putPropertyStatus, getUserById, getUsersDetailsById } from "../../api";
+import { fetchListingById, fetchMediaFile, checkQuestionnaireStatus, putPropertyStatus, getUserById } from "../../api";
 import { addToFavListing, deleteFavProperty } from "../../api";
 import { getPlaceholderAvatar } from "../../utils";
 

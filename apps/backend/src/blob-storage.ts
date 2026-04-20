@@ -1,115 +1,87 @@
-import { BlobServiceClient, ContainerClient } from "@azure/storage-blob"
-import fs from "fs/promises"
-import path from "path"
-import { createReadStream } from "fs"
-import { tmpdir } from "os"
+import { v2 as cloudinary } from "cloudinary"
 
-const containerName = "gdsd"
-const metadataKeys = {
-    MIMETYPE: "mimetype"
-}
-
-// Local storage folder
-const STORAGE_DIR = path.join(process.cwd(), "local-storage", containerName)
+const cloudinaryFolder = "gdsd"
 
 export class BlobStorage {
-    private static client: BlobServiceClient | null = null
-    private static containerClient: ContainerClient | null = null
-    private static useLocalStorage = false
+    private static getCloudinaryPublicId(id: string) {
+        return `${cloudinaryFolder}/${id}`
+    }
+
+    private static isCloudinaryNotFoundError(error: unknown) {
+        if (!error || typeof error !== "object") {
+            return false
+        }
+
+        const cloudinaryError = error as { http_code?: number, message?: string }
+        return cloudinaryError.http_code === 404 || cloudinaryError.message?.toLowerCase().includes("not found") === true
+    }
+
+    private static async getFromCloudinary(id: string) {
+        const publicId = BlobStorage.getCloudinaryPublicId(id)
+        const resourceTypes: Array<"image" | "video" | "raw"> = ["image", "video", "raw"]
+
+        for (const resourceType of resourceTypes) {
+            try {
+                const resource = await cloudinary.api.resource(publicId, { resource_type: resourceType })
+                const response = await fetch(resource.secure_url)
+
+                if (!response.ok) {
+                    throw new Error(`Failed to download Cloudinary file (${response.status})`)
+                }
+
+                const arrayBuffer = await response.arrayBuffer()
+                return {
+                    buffer: Buffer.from(arrayBuffer),
+                    mimeType: response.headers.get("content-type") ?? "application/octet-stream"
+                }
+            }
+            catch (error) {
+                if (BlobStorage.isCloudinaryNotFoundError(error)) {
+                    continue
+                }
+
+                throw error
+            }
+        }
+
+        throw new Error(`File with id ${id} not found`)
+    }
 
     static async init() {
-        try {
-            const connectionString = process.env["BLOB_STORAGE"]
-            if (!connectionString) {
-                console.warn("BLOB_STORAGE environment variable not set, using local storage")
-                await BlobStorage.initLocalStorage()
-                return
-            }
-
-            // create clients
-            BlobStorage.client = BlobServiceClient.fromConnectionString(connectionString)
-            BlobStorage.containerClient = BlobStorage.client.getContainerClient(containerName)
-
-            // create container if it does not exist
-            await BlobStorage.containerClient.createIfNotExists()
+        const cloudinaryUrl = process.env["CLOUDINARY_URL"]
+        if (!cloudinaryUrl) {
+            throw new Error("CLOUDINARY_URL environment variable is required")
         }
-        catch (error) {
-            console.warn("Failed to initialize Azure blob storage, using local storage instead:", error.message)
-            await BlobStorage.initLocalStorage()
+
+        // `cloudinary` keeps a module-level config cache. Because this module is imported
+        // before `.env` is parsed during app startup, we need to force a refresh from
+        // `process.env` here before applying extra options.
+        cloudinary.config(true)
+        cloudinary.config({ secure: true })
+        const config = cloudinary.config()
+
+        if (!config.cloud_name || !config.api_key || !config.api_secret) {
+            throw new Error("Cloudinary configuration is invalid. Check CLOUDINARY_URL")
         }
+
+        console.log("Cloudinary storage initialized")
     }
 
-    private static async initLocalStorage() {
-        BlobStorage.useLocalStorage = true
-        try {
-            await fs.mkdir(STORAGE_DIR, { recursive: true })
-            const metadataDir = path.join(STORAGE_DIR, "_metadata")
-            await fs.mkdir(metadataDir, { recursive: true })
-            console.log(`Local storage initialized at ${STORAGE_DIR}`)
-        }
-        catch (error) {
-            console.error("Failed to initialize local storage:", error)
-            throw error
-        }
-    }
+    static async upload(id: string, filePath: string) {
+        const response = await cloudinary.uploader.upload(filePath, {
+            public_id: BlobStorage.getCloudinaryPublicId(id),
+            resource_type: "auto",
+            overwrite: true,
+            invalidate: true
+        })
 
-    static async upload(id: string, filePath: string, mimeType: string) {
-        if (BlobStorage.useLocalStorage) {
-            // Copy file to local storage
-            const destPath = path.join(STORAGE_DIR, id)
-            const fileContent = await fs.readFile(filePath)
-            await fs.writeFile(destPath, fileContent)
-
-            // Save metadata
-            const metadataPath = path.join(STORAGE_DIR, "_metadata", id + ".json")
-            await fs.writeFile(metadataPath, JSON.stringify({
-                [metadataKeys.MIMETYPE]: mimeType
-            }))
-
-            return {
-                etag: new Date().getTime().toString(),
-                lastModified: new Date()
-            }
-        }
-        else {
-            const client = BlobStorage.containerClient!.getBlockBlobClient(id)
-            return await client.uploadFile(filePath, {
-                metadata: {
-                    [metadataKeys.MIMETYPE]: mimeType
-                }
-            })
+        return {
+            etag: response.etag ?? new Date().getTime().toString(),
+            lastModified: response.created_at ? new Date(response.created_at) : new Date()
         }
     }
 
     static async get(id: string) {
-        if (BlobStorage.useLocalStorage) {
-            const filePath = path.join(STORAGE_DIR, id)
-            const metadataPath = path.join(STORAGE_DIR, "_metadata", id + ".json")
-
-            try {
-                const buffer = await fs.readFile(filePath)
-                const metadataRaw = await fs.readFile(metadataPath, "utf-8")
-                const metadata = JSON.parse(metadataRaw)
-                const mimeType = metadata[metadataKeys.MIMETYPE]
-
-                return {
-                    buffer,
-                    mimeType
-                }
-            }
-            catch (error) {
-                throw new Error(`File with id ${id} not found: ${error.message}`)
-            }
-        }
-        else {
-            const client = BlobStorage.containerClient!.getBlockBlobClient(id)
-            const properties = await client.getProperties()
-            const buffer = await client.downloadToBuffer()
-            const mimeType = properties.metadata![metadataKeys.MIMETYPE]!
-            return {
-                buffer,
-                mimeType
-            }
-        }
+        return await BlobStorage.getFromCloudinary(id)
     }
 }

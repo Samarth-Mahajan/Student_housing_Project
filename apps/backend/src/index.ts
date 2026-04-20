@@ -20,11 +20,23 @@ import { insightsRouter } from "./routers/insights.router"
 import { searchHistoryRouter } from "./routers/searchHistory.router" // Add search history router
 
 tryParseEnv()
-const port = process.env["BACKEND_PORT"]
-const origin = [
-    "http://localhost:3000",
-    "https://gdsd-new.norwayeast.cloudapp.azure.com"
-]
+const port = process.env["PORT"] ?? process.env["BACKEND_PORT"] ?? "5000"
+const defaultOrigins = ["http://localhost:3000"]
+
+function parseOrigins(envValue: string | undefined, fallback: string[]) {
+    if (!envValue) {
+        return fallback
+    }
+
+    const origins = envValue
+        .split(",")
+        .map(entry => entry.trim())
+        .filter(Boolean)
+
+    return origins.length > 0 ? origins : fallback
+}
+
+const origins = parseOrigins(process.env["CORS_ORIGIN"], defaultOrigins)
 
 ;(async () => {
     // initialize s3 & db
@@ -34,12 +46,12 @@ const origin = [
     const app = express()
     const server = createServer(app)
     const io = new Server(server, {
-        cors: { origin }
+        cors: { origin: origins }
     })
 
     useChat(io)
 
-    app.use(cors({ origin }))
+    app.use(cors({ origin: origins }))
     app.use(express.json())
     app.use(express.static("public"))
 
@@ -61,6 +73,15 @@ const origin = [
     app.use("/favorites", favoritesRouter)
     app.use("/insights", insightsRouter)
     app.use("/search-history", searchHistoryRouter) // Add search history router
+
+    server.on("error", (error) => {
+        if ("code" in error && error.code === "EADDRINUSE") {
+            console.error(`Port ${port} is already in use. Stop the existing backend process or change BACKEND_PORT in .env.`)
+            process.exit(1)
+        }
+
+        throw error
+    })
 
     server.listen(port, () => {
         console.log(`Server is running on http://localhost:${port}`)
