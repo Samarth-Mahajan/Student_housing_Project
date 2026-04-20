@@ -1,12 +1,10 @@
-import type { IChat, IMessage, IProperty, IUser } from '@gdsd/common/models';
+import type { IChat, IProperty, IUser } from '@gdsd/common/models';
 import axios from 'axios';
 import type { SearchFilters } from './components/SearchFilters';
 import type { UserProfile } from "./components/userProfile";
 
 
-export const baseURL = process.env["NODE_ENV"] === 'production'
-    ? 'https://gdsd-new.norwayeast.cloudapp.azure.com/api'
-    : 'http://localhost:5000'
+export const baseURL = process.env["REACT_APP_API_BASE_URL"] || 'http://localhost:5000'
 
 // Create a single Axios instance for all API calls
 const axiosInstance = axios.create({

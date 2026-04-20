@@ -124,7 +124,7 @@ const EditListing: React.FC = () => {
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    const { name, value, type } = e.target;
+    const { name, value } = e.target;
 
     const isCheckbox = (e.target as HTMLInputElement).type === "checkbox";
     const checked = isCheckbox

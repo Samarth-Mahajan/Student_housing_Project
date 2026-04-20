@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import { Toaster, toast } from "sonner";
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -82,12 +82,6 @@ const App: React.FC = () => {
     };
   }, []);
 
-  // Toggle dropdown visibility
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-    setDropdownOpen((prev) => !prev);
-  };
-
   // Close dropdown
   const closeDropdown = () => {
     setDropdownOpen(false);
@@ -102,9 +96,9 @@ const App: React.FC = () => {
     window.dispatchEvent(new Event("authChange"));
   };
 
-  const updateUnreadCount = () => {
+  const updateUnreadCount = useCallback(() => {
     fetchUnreadCount().then(setUnreadCount).catch(() => { })
-  }
+  }, [])
 
   const CheckAuth: React.FC = () => {
     const location = useLocation()
@@ -127,14 +121,11 @@ const App: React.FC = () => {
     )
   }
 
-  const checkAuth = useMemo(() => <CheckAuth />, [])
-  const notificationCenter = useMemo(() => <NotificationCenter toggleUnreadUpdate={updateUnreadCount} />, [])
-
   return (
     <Router>
       <Toaster />
-      {checkAuth}
-      {notificationCenter}
+      <CheckAuth />
+      <NotificationCenter toggleUnreadUpdate={updateUnreadCount} />
       <div className="app">
         {/* Desktop Navbar (visible on md and up) */}
         <nav className="items-center justify-between hidden p-3 bg-black shadow-lg md:flex">

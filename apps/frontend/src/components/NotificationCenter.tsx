@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { io } from "socket.io-client";
 import { baseURL, fetchUser } from "../api";
 import { CHAT_HEADER } from "@gdsd/common/constants";
@@ -19,6 +19,15 @@ const NotificationCenter: React.FC<Props> = ({ toggleUnreadUpdate }) => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(localStorage.getItem("userId"));
   const [messageIds] = useState<Record<string, (string | number)[]>>({})
 
+  const getUser = useCallback(async (id: string) => {
+    if (id in users)
+      return users[id]!
+
+    const user = await fetchUser(id)
+    users[id] = user
+    return user
+  }, [users])
+
   useEffect(() => {
     const handleAuthChange = () => {
       const token = localStorage.getItem("authToken")
@@ -36,7 +45,7 @@ const NotificationCenter: React.FC<Props> = ({ toggleUnreadUpdate }) => {
       window.removeEventListener("storage", handleAuthChange);
       window.removeEventListener("authChange", handleAuthChange);
     };
-  }, []);
+  }, [toggleUnreadUpdate]);
 
   const socket = useMemo(() => {
     if (!currentUserId)
@@ -109,7 +118,7 @@ const NotificationCenter: React.FC<Props> = ({ toggleUnreadUpdate }) => {
       socket.off("disconnect", onDisconnect);
       socket.off("message", onMessage);
     };
-  }, [socket]);
+  }, [getUser, messageIds, navigate, socket, toggleUnreadUpdate]);
 
   // send messages
   useEffect(() => {
@@ -126,15 +135,6 @@ const NotificationCenter: React.FC<Props> = ({ toggleUnreadUpdate }) => {
       document.removeEventListener("chat-send-message", handleMessage);
     };
   }, [socket]);
-
-  async function getUser(id: string) {
-    if (id in users)
-      return users[id]!
-
-    const user = await fetchUser(id)
-    users[id] = user
-    return user
-  }
 
   return <></>;
 

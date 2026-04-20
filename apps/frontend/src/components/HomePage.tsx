@@ -43,7 +43,6 @@ const HomePage: React.FC = () => {
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({});
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set()); // Set of favorite listing IDs
-  const [userRole, setUserRole] = useState<string>(""); // User role state
   const [showDropdown, setShowDropdown] = useState(false);
 
   // Fetch all listings on component mount
@@ -56,7 +55,6 @@ const HomePage: React.FC = () => {
 
     // Fetch user role from localStorage
     const role = localStorage.getItem("userRole") || ""; // Get user role from localStorage
-    setUserRole(role);
 
     const fetchAllListings = async () => {
       try {
@@ -165,10 +163,6 @@ const HomePage: React.FC = () => {
       setFiltersRef.current(mappedFilters)
       handleSearch(searchData.query, mappedFilters)
   };
-
-
-
-  const authToken = localStorage.getItem("authToken");
 
   const toggleFavorite = async (id: string, isNowFavorite: boolean) => {
     setFavoriteIds((prevFavorites) => {

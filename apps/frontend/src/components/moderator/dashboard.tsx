@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { fetchListingsForReview } from '../../api'
 import { FaSearch } from "react-icons/fa"
@@ -41,10 +41,15 @@ const ModeratorDashboard: React.FC = () => {
     const [listings, setListings] = useState<Listing[]>([])
     const [statusFilter, setStatusFilter] = useState<string>("")
     const [query, setQuery] = useState<string>("")
+    const queryRef = useRef("")
 
-    const fetchAllListings = async () => {
+    useEffect(() => {
+        queryRef.current = query
+    }, [query])
+
+    const fetchAllListings = useCallback(async () => {
         try {
-            const allListings = await fetchListingsForReview(query, statusFilter)
+            const allListings = await fetchListingsForReview(queryRef.current, statusFilter)
             if (Array.isArray(allListings.data)) {
                 setListings(allListings.data)
             } else {
@@ -53,7 +58,7 @@ const ModeratorDashboard: React.FC = () => {
         } catch (error) {
             console.error("Error fetching all listings:", error)
         }
-    }
+    }, [statusFilter])
 
     const handleSearch = () => {
         fetchAllListings()
@@ -65,7 +70,7 @@ const ModeratorDashboard: React.FC = () => {
 
     useEffect(() => {
         fetchAllListings()
-    }, [statusFilter])
+    }, [fetchAllListings])
 
     return (
         <div className="flex flex-col bg-gray-100">

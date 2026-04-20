@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { fetchFavoriteListings, deleteFavProperty } from "../../api"; // Import API functions
-import { Link, useParams } from "react-router-dom";
 import HouseCard from "../card"; // Reusing the HouseCard
 //import HeartButton from "../heartButton";
 
@@ -28,7 +27,6 @@ interface Listing {
   }
 
 const FavoriteListingsPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); // Extract 'id' from URL params
   const [favorites, setFavorites] = useState<Listing[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);

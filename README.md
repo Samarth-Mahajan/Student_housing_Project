@@ -30,7 +30,7 @@ This is a private repository of team-5 GDSD
 
 - copy and rename the `.env.example` file to `.env` and replace the values inside if applicable:
   - `BACKEND_PORT`: the port where the backend is reachable
-  - `BLOB_STORAGE`: the Azure blob storage endpoint
+  - `CLOUDINARY_URL`: Cloudinary connection URL used for media uploads
 - install all dependencies:
 
   ```sh

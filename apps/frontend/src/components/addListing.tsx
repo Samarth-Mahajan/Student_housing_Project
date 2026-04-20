@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { addProperty, fetchQuestionnaire, uploadMediaFile } from "../api";
 import { useNavigate } from "react-router-dom";
-import { ChangeEvent } from "react";
 
 // Enums
 export enum PropertyType {
@@ -38,13 +37,10 @@ const AddListing: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const [questionnaireId, setQuestionnaireId] = useState<string>("0");
   // State for storing the fetched questionnaires
   const [questionnaireOptions, setQuestionnaireOptions] = useState<
     { id: string; name: string }[]
   >([]);
-  const [selectedQuestionnaireId, setSelectedQuestionnaireId] =
-    useState<string>("");
 
   const validateDates = (fromDate: string, toDate: string): string => {
     if (fromDate && toDate) {
@@ -89,18 +85,12 @@ const AddListing: React.FC = () => {
     return "";
   };
 
-  useEffect(() => {
-    const questionId = localStorage.getItem("questionnaireId") || "0";
-    setQuestionnaireId(questionId);
-    console.log(questionId);
-  }, []);
-
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    const { name, value, type } = e.target;
+    const { name, value } = e.target;
 
     const isCheckbox = (e.target as HTMLInputElement).type === "checkbox";
     const checked = isCheckbox

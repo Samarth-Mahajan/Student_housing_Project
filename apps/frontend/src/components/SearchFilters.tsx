@@ -72,7 +72,7 @@ const SearchFiltersComponent: React.FC<Props> = ({ onChange, onReset, onApplyFil
           console.error("unhandled:", key, value)
       }
     }
-  }, [setFiltersRef.current])
+  }, [setFiltersRef])
 
   return (
     <form className="grid items-end grid-cols-10 gap-4 mt-6 sf-form">
