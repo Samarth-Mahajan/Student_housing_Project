@@ -34,6 +34,7 @@
         "BACKEND_PORT",
         "CORS_ORIGIN",
         "CLOUDINARY_URL",
+        "DATABASE_URL",
         "DB_CONNECTION",
         "NODE_ENV",
         "PORT"

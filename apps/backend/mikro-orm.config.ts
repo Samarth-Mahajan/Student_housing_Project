@@ -11,7 +11,7 @@ export const options: Options = {
     metadataProvider: TsMorphMetadataProvider,
     entities: [Amenity, FavoriteProperty, LandlordQuestionnaire, MediaFile, Message, Property, SearchHistoryV2, User, TenantQuestionnaire],
     entitiesTs: ["./src/entities"],
-    clientUrl: process.env["DB_CONNECTION"],
+    clientUrl: process.env["DATABASE_URL"] ?? process.env["DB_CONNECTION"],
     seeder: {
         path: "./src/db/seeders"
     },
