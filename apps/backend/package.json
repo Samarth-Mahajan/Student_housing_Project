@@ -13,6 +13,7 @@
     "dependencies": {
         "@gdsd/common": "*",
         "@azure/storage-blob": "^12.25.0",
+        "@mikro-orm/migrations": "^6.4.0",
         "@mikro-orm/mysql": "^6.4.0",
         "@mikro-orm/reflection": "^6.4.0",
         "cloudinary": "^2.8.0",
@@ -31,7 +32,6 @@
         "@gdsd/typescript-config": "*",
         "@microsoft/api-extractor": "^7.48.0",
         "@mikro-orm/cli": "^6.4.0",
-        "@mikro-orm/migrations": "^6.4.0",
         "@mikro-orm/seeder": "^6.4.0",
         "@swc-node/register": "^1.10.9",
         "@types/cors": "^2.8.17",

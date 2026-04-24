@@ -10,6 +10,7 @@ export default defineConfig({
         dts: ".d.ts"
     }),
     bundle: true,
+    skipNodeModulesBundle: true,
     splitting: true,
     platform: "node",
     experimentalDts: true,
