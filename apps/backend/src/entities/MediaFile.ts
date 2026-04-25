@@ -19,7 +19,7 @@ export class MediaFile implements IMediaFile {
     //     this.type = type
     // }
 
-    @ManyToOne(() => Property, { hidden: true })
+    @ManyToOne(() => Property, { hidden: true, nullable: true })
     property?: Property
 
     constructor(type: MediaType, property?: Property) {
