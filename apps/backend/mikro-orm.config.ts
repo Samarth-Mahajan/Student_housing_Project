@@ -1,5 +1,6 @@
+import "reflect-metadata"
+import { ReflectMetadataProvider } from "@mikro-orm/core"
 import { defineConfig, type Options } from "@mikro-orm/mysql"
-import { TsMorphMetadataProvider } from "@mikro-orm/reflection"
 import { tryParseEnv } from "@gdsd/common/util"
 import { LandlordQuestionnaire, MediaFile, Property, User, FavoriteProperty, Message, TenantQuestionnaire, SearchHistoryV2 } from "./src/entities"
 import { Amenity } from "./src/entities/Amenity"
@@ -8,9 +9,8 @@ import { Migrator } from "@mikro-orm/migrations"
 tryParseEnv()
 
 export const options: Options = {
-    metadataProvider: TsMorphMetadataProvider,
+    metadataProvider: ReflectMetadataProvider,
     entities: [Amenity, FavoriteProperty, LandlordQuestionnaire, MediaFile, Message, Property, SearchHistoryV2, User, TenantQuestionnaire],
-    entitiesTs: ["./src/entities"],
     clientUrl: process.env["DATABASE_URL"] ?? process.env["DB_CONNECTION"],
     seeder: {
         path: "./dist/db/seeders",
