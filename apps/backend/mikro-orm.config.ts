@@ -13,11 +13,13 @@ export const options: Options = {
     entitiesTs: ["./src/entities"],
     clientUrl: process.env["DATABASE_URL"] ?? process.env["DB_CONNECTION"],
     seeder: {
-        path: "./src/db/seeders"
+        path: "./dist/db/seeders",
+        pathTs: "./src/db/seeders"
     },
     allowGlobalContext: true,
     extensions: [Migrator],
     migrations: {
+        path: "./dist/db/migrations",
         pathTs: "./src/db/migrations",
         snapshotName: ".snapshot"
     }

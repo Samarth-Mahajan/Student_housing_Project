@@ -2,7 +2,11 @@ import { copy } from "esbuild-plugin-copy"
 import { defineConfig } from "tsup"
 
 export default defineConfig({
-    entry: ["src/index.ts"],
+    entry: [
+        "src/index.ts",
+        "src/db/migrations/*.ts",
+        "src/db/seeders/*.ts"
+    ],
     clean: true,
     format: ["esm"],
     outExtension: () => ({
@@ -20,6 +24,10 @@ export default defineConfig({
                 {
                     from: "public/**/*",
                     to: "public"
+                },
+                {
+                    from: "src/db/migrations/.snapshot.json",
+                    to: "db/migrations"
                 },
                 {
                     from: "dist/_tsup-dts-rollup.d.ts",
