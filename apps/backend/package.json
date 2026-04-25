@@ -8,7 +8,9 @@
         "build": "tsup",
         "start": "node dist/index.js",
         "check-types": "tsc --noEmit",
-        "mikro-orm": "cross-env MIKRO_ORM_CLI_CONFIG=./mikro-orm.config.ts MIKRO_ORM_CLI_PREFER_TS=true MIKRO_ORM_CLI_TS_LOADER=swc mikro-orm"
+        "mikro-orm": "cross-env NODE_OPTIONS=--import=@swc-node/register/esm-register MIKRO_ORM_CLI_CONFIG=./mikro-orm.config.ts mikro-orm",
+        "migrate:up": "npm run mikro-orm -- migration:up",
+        "migrate:down": "npm run mikro-orm -- migration:down"
     },
     "dependencies": {
         "@gdsd/common": "*",

@@ -6,7 +6,9 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "mikro-orm": "turbo mikro-orm -- ",
-    "seed-db": "npm run mikro-orm seeder:run"
+    "seed-db": "npm run mikro-orm seeder:run",
+    "migrate:up": "npm run migrate:up --workspace=backend",
+    "migrate:down": "npm run migrate:down --workspace=backend"
   },
   "devDependencies": {
     "@playwright/test": "^1.50.1",
