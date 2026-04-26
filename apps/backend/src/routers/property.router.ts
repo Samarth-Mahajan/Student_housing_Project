@@ -151,29 +151,46 @@ router.post(
     authenticateToken,
     validateProperty(false),
     async (req: Request, res: Response) => {
-        const errors = validationResult(req)
-        if (!errors.isEmpty()) {
-            res.status(400).json({ errors: errors.array() })
-            return
+        try {
+            const errors = validationResult(req)
+            if (!errors.isEmpty()) {
+                res.status(400).json({ errors: errors.array() })
+                return
+            }
+
+            const { landlordId, mediaFileIds, ...data } = req.body
+
+            const normalizedData = {
+                ...data,
+                landlordQuestionnaireId: data.landlordQuestionnaireId || undefined,
+                description: data.description || undefined,
+                size: data.size === "" ? undefined : data.size,
+            }
+
+            const mediaIds = Array.isArray(mediaFileIds) ? mediaFileIds : []
+            const mediaFiles = await DB.em.find(MediaFile, { id: { $in: mediaIds } })
+
+            if (mediaFiles.length !== mediaIds.length) {
+                res.status(400).json({ error: "Some media files could not be found." })
+                return
+            }
+
+            const property = DB.properties.create({
+                landlord: landlordId,
+                ...normalizedData
+            })
+            property.mediaFiles.add(mediaFiles)
+            await DB.em.flush()
+
+            res.status(201).json({ property })
         }
-
-        const { landlordId, mediaFileIds, ...data } = req.body
-
-        const mediaFiles = await DB.em.find(MediaFile, { id: { $in: mediaFileIds } })
-
-        if (mediaFiles.length !== mediaFileIds.length) {
-            res.status(400).json({ error: "Some media files could not be found." })
-            return
+        catch (error: unknown) {
+            console.error("Error creating property:", error)
+            res.status(500).json({
+                success: false,
+                error: "Internal Server Error"
+            })
         }
-
-        const property = DB.properties.create({
-            landlord: landlordId,
-            ...data
-        })
-        property.mediaFiles.add(mediaFiles)
-        await DB.em.flush()
-
-        res.status(201).json({ property })
     }
 )
 
