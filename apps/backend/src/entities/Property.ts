@@ -19,7 +19,7 @@ export class Property implements IProperty {
     @Prop<Property>({ onCreate: e => new Date(e.creationDate.getTime() + 60 * 24 * 60 * 60 * 1000) })
     renewalDate!: Date & Opt
 
-    @Prop()
+    @Prop({ nullable: true })
     reviewDate?: Date
 
     @ManyToOne(() => User)
