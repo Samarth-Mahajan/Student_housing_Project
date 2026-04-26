@@ -67,7 +67,7 @@ export class Property implements IProperty {
     @Prop({ default: 0 })
     visits?: number = 0
 
-    @Prop({ type: "uuid" })
+    @Prop({ type: "uuid", nullable: true })
     landlordQuestionnaireId?: string
 
     @OneToMany(() => MediaFile, mediaFile => mediaFile.property)
