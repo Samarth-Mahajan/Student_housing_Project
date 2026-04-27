@@ -1,8 +1,9 @@
 import type { Request, Response } from "express"
 import express from "express"
 import { validationResult, query, param, body } from "express-validator"
+import { BlobStorage } from "../blob-storage"
 import { DB } from "../db"
-import { MediaFile, Property } from "../entities"
+import { FavoriteProperty, MediaFile, Message, Property } from "../entities"
 import { validateProperty } from "../validators"
 import { PropertyType, PropertyStatus } from "@gdsd/common/models"
 import { authenticateToken } from "../middlewares/auth.middleware"
@@ -421,7 +422,7 @@ router.delete(
                 return
             }
 
-            const property = await DB.properties.findOne(id, { populate: ["landlord"] })
+            const property = await DB.properties.findOne(id, { populate: ["landlord", "mediaFiles"] })
 
             if (!property) {
                 res.status(404).json({
@@ -441,7 +442,23 @@ router.delete(
                 return
             }
 
-            await DB.em.removeAndFlush(property)
+            const mediaIds = property.mediaFiles.getItems().map(media => media.id)
+
+            await DB.em.transactional(async em => {
+                await em.nativeDelete(Message, { property: id })
+                await em.nativeDelete(FavoriteProperty, { property: id })
+                await em.nativeDelete(MediaFile, { property: id })
+                await em.nativeDelete(Property, { id })
+            })
+
+            for (const mediaId of mediaIds) {
+                try {
+                    await BlobStorage.delete(mediaId)
+                }
+                catch (storageError) {
+                    console.error(`Failed to delete media asset ${mediaId}:`, storageError)
+                }
+            }
 
             res.status(200).json({
                 success: true,

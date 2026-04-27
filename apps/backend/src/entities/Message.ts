@@ -15,7 +15,7 @@ export class Message implements IMessage {
     @Prop()
     content!: string
 
-    @ManyToOne(() => Property)
+    @ManyToOne(() => Property, { deleteRule: "cascade" })
     property!: Property
 
     @ManyToOne(() => User)

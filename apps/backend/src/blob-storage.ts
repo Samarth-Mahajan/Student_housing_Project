@@ -7,6 +7,14 @@ export class BlobStorage {
         return `${cloudinaryFolder}/${id}`
     }
 
+    private static getCloudinaryDeliveryUrl(id: string, resourceType: "image" | "video" | "raw") {
+        return cloudinary.url(BlobStorage.getCloudinaryPublicId(id), {
+            secure: true,
+            resource_type: resourceType,
+            type: "upload"
+        })
+    }
+
     private static isCloudinaryNotFoundError(error: unknown) {
         if (!error || typeof error !== "object") {
             return false
@@ -83,5 +91,50 @@ export class BlobStorage {
 
     static async get(id: string) {
         return await BlobStorage.getFromCloudinary(id)
+    }
+
+    static async getUrl(id: string) {
+        const resourceTypes: Array<"image" | "video" | "raw"> = ["image", "video", "raw"]
+
+        for (const resourceType of resourceTypes) {
+            const url = BlobStorage.getCloudinaryDeliveryUrl(id, resourceType)
+
+            try {
+                const response = await fetch(url, { method: "HEAD" })
+                if (response.ok) {
+                    return url
+                }
+            }
+            catch {
+                // Try the next resource type when the current candidate is unavailable.
+            }
+        }
+
+        throw new Error(`File with id ${id} not found`)
+    }
+
+    static async delete(id: string) {
+        const publicId = BlobStorage.getCloudinaryPublicId(id)
+        const resourceTypes: Array<"image" | "video" | "raw"> = ["image", "video", "raw"]
+
+        for (const resourceType of resourceTypes) {
+            try {
+                const result = await cloudinary.uploader.destroy(publicId, {
+                    resource_type: resourceType,
+                    invalidate: true
+                })
+
+                if (result.result === "ok" || result.result === "not found") {
+                    return
+                }
+            }
+            catch (error) {
+                if (BlobStorage.isCloudinaryNotFoundError(error)) {
+                    continue
+                }
+
+                throw error
+            }
+        }
     }
 }

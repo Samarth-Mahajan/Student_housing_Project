@@ -15,6 +15,6 @@ export class FavoriteProperty implements IFavoriteProperty {
     @ManyToOne(() => User)
     student!: User
 
-    @ManyToOne(() => Property)
+    @ManyToOne(() => Property, { deleteRule: "cascade" })
     property!: Property
 }
